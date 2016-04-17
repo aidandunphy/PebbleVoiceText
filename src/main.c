@@ -36,7 +36,6 @@ static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reas
   APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Failed to Send!");
 }
 
-
 static void handle_message(char *message) {
   DictionaryIterator *iter;
   app_message_outbox_begin(&iter);
@@ -44,26 +43,19 @@ static void handle_message(char *message) {
   app_message_outbox_send();
 }
 
-/******************************* Dictation API ********************************/
-
 static void dictation_session_callback(DictationSession *session, DictationSessionStatus status, char *transcription, void *context) {
   if(status == DictationSessionStatusSuccess) {
-    // Display the dictated text
     snprintf(s_last_text, sizeof(s_last_text), "Transcription:\n\n%s", transcription);
     text_layer_set_text(s_output_layer, s_last_text);
     handle_message(transcription);
   } else {
-    // Display the reason for any error
     static char s_failed_buff[128];
     snprintf(s_failed_buff, sizeof(s_failed_buff), "Transcription failed.\n\nError ID:\n%d", (int)status);
     text_layer_set_text(s_output_layer, s_failed_buff);
   }
 }
 
-/************************************ App *************************************/
-
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-  // Start voice dictation UI
   dictation_session_start(s_dictation_session);
 }
 
@@ -103,6 +95,7 @@ static void init() {
 
   // Create new dictation session
   s_dictation_session = dictation_session_create(sizeof(s_last_text), dictation_session_callback, NULL);
+  dictation_session_enable_confirmation(s_dictation_session, 0);
 }
 
 static void deinit() {

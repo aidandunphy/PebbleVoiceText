@@ -2,7 +2,6 @@ var stem = 'http://api.txtlocal.com/send/';
 var hash = 'e74738aafdd80b23434be0df5fc2f30967cca16f';
 var username = 'aidan.j.dunphy@gmail.com';
 var numbers = '447970911539';
-var messageText = 'Well hello there';
 var sender = 'Aidan Dunphy';
 
 var xhrRequest = function (url, type) {
@@ -52,9 +51,6 @@ function sendText(message) {
   // Construct URL
   var encodedMessageText = encodeURIComponent(message);
   var encodedSender = encodeURIComponent(sender);
-  console.log ('encoded message is ' + encodedMessageText);
-  // var url = stem + '?username=' + username + '&hash=' + hash + '&numbers=' + numbers + '&message=' + encodedMessageText + '&sender=' & encodeURIComponent(sender);
-  // var url = stem + '?username=' + username + '&hash=' + hash + '&numbers=' + numbers + '&message=hello&sender=aidan.j.dunphy@gmail.com';
   var url = stem +
       '?username=' + username +
       '&hash=' + hash +
@@ -62,7 +58,7 @@ function sendText(message) {
       '&message=' + encodedMessageText +
       '&sender=' + encodedSender;
   console.log ('URL is ' + url);
-  // xhrRequest(url, 'GET');
+  xhrRequest(url, 'GET');
 }
 
 // Listen for when an AppMessage is received

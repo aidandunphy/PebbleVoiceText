@@ -6,4 +6,4 @@ Initial build uses Textlocal which is a paid service so please don't use my cred
 Next steps are
 - add a config so that the user can use their own gateway
 - address book lookup using dictation so you can speak the (nick)name of the recipient: done properly this would use a companion app on the smartphone but this is beyond me at present; thinking about using Google API as I use Gmail :)
-If I get this stuff working then I'll think about extending it to email and possibly FB Messenger (not sure if this is possible yet).
+- If I get this stuff working then I'll think about extending it to email and possibly FB Messenger (not sure if this is possible yet).

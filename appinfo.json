@@ -1,0 +1,20 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "aidan.j.dunphy@gmail.com",
+    "enableMultiJS": true,
+    "longName": "Voice Text",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "sdkVersion": "3",
+    "shortName": "Voice Text",
+    "uuid": "1e7bcd27-0ad7-4201-adb2-b532abd851f9",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}

@@ -1,8 +1,32 @@
-var stem = 'http://api.txtlocal.com/send/';
-var hash = 'e74738aafdd80b23434be0df5fc2f30967cca16f';
-var username = 'aidan.j.dunphy@gmail.com';
 var numbers = '447970911539';
-var sender = 'Aidan Dunphy';
+var options = JSON.parse(localStorage.getItem('options')) || { stem: "", username: "", hash: "", sender: "" };
+console.log('Starting with options: ' + JSON.stringify(options));
+
+function jsonToQueryString(json) {
+    return '?' + 
+        Object.keys(json).map(function(key) {
+            return encodeURIComponent(key) + '=' +
+                encodeURIComponent(json[key]);
+        }).join('&');
+}
+
+Pebble.addEventListener("showConfiguration", function() {
+  console.log("showing configuration" + jsonToQueryString(options));
+  Pebble.openURL('http://aidandunphy.github.io/voicetextconfig.html?'+ jsonToQueryString(options));
+});
+
+Pebble.addEventListener("webviewclosed", function(e) {
+  console.log("configuration closed");
+  //Using primitive JSON validity and non-empty check
+  if (e.response.charAt(0) == "{" && e.response.slice(-1) == "}" && e.response.length > 5) {
+    options = JSON.parse(decodeURIComponent(e.response));
+    console.log("Options = " + JSON.stringify(options));
+    localStorage.setItem('options', JSON.stringify(options));
+    console.log('saved: ' + JSON.stringify(options));
+  } else {
+    console.log("Cancelled");
+  }
+});
 
 var xhrRequest = function (url, type) {
   var xhr = new XMLHttpRequest();
@@ -50,10 +74,10 @@ var xhrRequest = function (url, type) {
 function sendText(message) {
   // Construct URL
   var encodedMessageText = encodeURIComponent(message);
-  var encodedSender = encodeURIComponent(sender);
-  var url = stem +
-      '?username=' + username +
-      '&hash=' + hash +
+  var encodedSender = encodeURIComponent(options.sender);
+  var url = options.stem +
+      '?username=' + options.username +
+      '&hash=' + options.hash +
       '&numbers=' + numbers +
       '&message=' + encodedMessageText +
       '&sender=' + encodedSender;

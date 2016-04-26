@@ -35,13 +35,13 @@ var xhrRequest = function (url, type) {
 
         // Construct meessage
         var dictionary = {
-          'KEY_STATUS': response.status,
-          'KEY_ERROR' : ""
+          'VoiceTextKeyStatus': response.status,
+          'VoiceTextKeyErrorText' : ""
         };
         
         if (response.errors) {
           var error_message = JSON.parse(response.errors).message;
-          dictionary.KEY_ERROR = error_message;
+          dictionary.voiceTextKeyErrorText = error_message;
           Pebble.sendAppMessage(dictionary,
             function(e) {
               console.log('Message delivery status sent to Pebble successfully!');
@@ -63,7 +63,8 @@ var xhrRequest = function (url, type) {
     }
   };
   xhr.open(type, url);
-  xhr.send();
+  //xhr.send();
+  console.log ('sending' + url);
 };
 
 function sendText(message) {
@@ -82,8 +83,7 @@ function sendText(message) {
 // Listen for when an AppMessage is received
 Pebble.addEventListener('appmessage',
   function(e) {
-    var messageText = e.payload["0"];
+    var messageText = e.payload["2"];
     sendText(messageText);
   }                     
 );
-

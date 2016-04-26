@@ -1,5 +1,8 @@
 {
-    "appKeys": {},
+    "appKeys": {
+        "voiceTextKeyErrorText": 1,
+        "voiceTextKeyStatus": 0
+    },
     "capabilities": [
         "configurable"
     ],

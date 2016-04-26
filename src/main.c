@@ -5,12 +5,13 @@ static TextLayer *s_output_layer;
 
 static DictationSession *s_dictation_session;
 static char s_last_text[512];
-static char status[3];
+static char status[7];
 static char errorText[100];
 
 typedef enum {
   voiceTextKeyStatus = 0,
-  voiceTextKeyErrorText
+  voiceTextKeyErrorText = 1,
+  voiceTextKeyMessage = 2
 } voiceTextKey;
 
 
@@ -18,14 +19,14 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *status_tuple = dict_find(iter, voiceTextKeyStatus);
   Tuple *errorText_tuple = dict_find(iter, voiceTextKeyErrorText);
 
-//  if (status_tuple) {
-//    strncpy(status, status_tuple->value->cstring, 3);
-//    text_layer_set_text(s_symbol_layer, status);
-//  }
-//  if (errorText_tuple) {
-//    strncpy(errorText, errorText_tuple->value->cstring, 100);
-//    text_layer_set_text(s_price_layer, errorText);
-//  }
+  if (status_tuple) {
+    strncpy(status, status_tuple->value->cstring, 7);
+    text_layer_set_text(s_output_layer, status);
+  }
+  if (errorText_tuple) {
+    strncpy(errorText, errorText_tuple->value->cstring, 100);
+    text_layer_set_text(s_output_layer, errorText);
+  }
 }
 
 static void in_dropped_handler(AppMessageResult reason, void *context) {
@@ -39,7 +40,7 @@ static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reas
 static void handle_message(char *message) {
   DictionaryIterator *iter;
   app_message_outbox_begin(&iter);
-  dict_write_cstring(iter, 0, message);
+  dict_write_cstring(iter, voiceTextKeyMessage, message);
   app_message_outbox_send();
 }
 
@@ -56,7 +57,10 @@ static void dictation_session_callback(DictationSession *session, DictationSessi
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-  dictation_session_start(s_dictation_session);
+  // dictation_session_start(s_dictation_session);
+  char mesg [] = "blah";
+  char *pmesg = &mesg[0];
+  handle_message(pmesg);
 }
 
 static void click_config_provider(void *context) {
@@ -94,8 +98,8 @@ static void init() {
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 
   // Create new dictation session
-  s_dictation_session = dictation_session_create(sizeof(s_last_text), dictation_session_callback, NULL);
-  dictation_session_enable_confirmation(s_dictation_session, 0);
+  // s_dictation_session = dictation_session_create(sizeof(s_last_text), dictation_session_callback, NULL);
+  // dictation_session_enable_confirmation(s_dictation_session, 0);
 }
 
 static void deinit() {

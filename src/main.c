@@ -11,9 +11,9 @@ static char errorText[100];
 typedef enum {
   voiceTextKeyStatus = 0,
   voiceTextKeyErrorText = 1,
-  voiceTextKeyMessage = 2
+  voiceTextKeyDestination = 2,  
+  voiceTextKeyMessage = 3
 } voiceTextKey;
-
 
 static void in_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *status_tuple = dict_find(iter, voiceTextKeyStatus);
@@ -37,30 +37,35 @@ static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reas
   APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Failed to Send!");
 }
 
-static void handle_message(char *message) {
+static void handle_message(char *destination, char *message) {
   DictionaryIterator *iter;
   app_message_outbox_begin(&iter);
+  dict_write_cstring(iter, voiceTextKeyDestination, destination);
   dict_write_cstring(iter, voiceTextKeyMessage, message);
   app_message_outbox_send();
 }
 
 static void dictation_session_callback(DictationSession *session, DictationSessionStatus status, char *transcription, void *context) {
   if(status == DictationSessionStatusSuccess) {
-    snprintf(s_last_text, sizeof(s_last_text), "Transcription:\n\n%s", transcription);
+    snprintf(s_last_text, sizeof(s_last_text), "I think you said:\n\n%s", transcription);
     text_layer_set_text(s_output_layer, s_last_text);
-    handle_message(transcription);
+    char destination [] = "447970911539";
+    char *pdestination = &destination[0];
+    handle_message(pdestination, transcription);
   } else {
     static char s_failed_buff[128];
-    snprintf(s_failed_buff, sizeof(s_failed_buff), "Transcription failed.\n\nError ID:\n%d", (int)status);
+    snprintf(s_failed_buff, sizeof(s_failed_buff), "Sorry I couldn't understand that.\n\nError ID:\n%d", (int)status);
     text_layer_set_text(s_output_layer, s_failed_buff);
   }
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
   // dictation_session_start(s_dictation_session);
-  char mesg [] = "blah";
-  char *pmesg = &mesg[0];
-  handle_message(pmesg);
+  char message [] = "blah";
+  char *pmessage = &message[0];
+  char destination [] = "447970911539";
+  char *pdestination = &destination[0];
+  handle_message(destination, pmessage);
 }
 
 static void click_config_provider(void *context) {
@@ -72,7 +77,7 @@ static void window_load(Window *window) {
   GRect bounds = layer_get_bounds(window_layer);
 
   s_output_layer = text_layer_create(GRect(bounds.origin.x, (bounds.size.h - 24) / 2, bounds.size.w, bounds.size.h));
-  text_layer_set_text(s_output_layer, "Press Select to get input!");
+  text_layer_set_text(s_output_layer, "Press select then speak");
   text_layer_set_text_alignment(s_output_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(s_output_layer));
 }

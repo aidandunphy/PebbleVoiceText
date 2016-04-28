@@ -1,4 +1,3 @@
-var numbers = '447970911539';
 var options = JSON.parse(localStorage.getItem('options')) || { stem: "", username: "", hash: "", sender: "" };
 
 function jsonToQueryString(json) {
@@ -14,7 +13,7 @@ Pebble.addEventListener("showConfiguration", function() {
 });
 
 Pebble.addEventListener("webviewclosed", function(e) {
-  //Using primitive JSON validity and non-empty check
+  // primitive JSON validitation
   if (e.response.charAt(0) == "{" && e.response.slice(-1) == "}" && e.response.length > 5) {
     options = JSON.parse(decodeURIComponent(e.response));
     localStorage.setItem('options', JSON.stringify(options));
@@ -67,14 +66,14 @@ var xhrRequest = function (url, type) {
   console.log ('sending' + url);
 };
 
-function sendText(message) {
+function sendText(destination, message) {
   // Construct URL
   var encodedMessageText = encodeURIComponent(message);
   var encodedSender = encodeURIComponent(options.sender);
   var url = options.stem +
       '?username=' + options.username +
       '&hash=' + options.hash +
-      '&numbers=' + numbers +
+      '&numbers=' + destination +
       '&message=' + encodedMessageText +
       '&sender=' + encodedSender;
   xhrRequest(url, 'GET');
@@ -83,7 +82,8 @@ function sendText(message) {
 // Listen for when an AppMessage is received
 Pebble.addEventListener('appmessage',
   function(e) {
-    var messageText = e.payload["2"];
-    sendText(messageText);
+    var destination = e.payload["2"];
+    var message = e.payload["3"];
+    sendText(destination, message);
   }                     
 );
